@@ -12,7 +12,6 @@ public class Arena {
     private Circle box;
 
     public Arena() {
-
         this.box = new Circle((float) (WIDTH / 2), (float) (HEIGHT / 2), (float) (WIDTH / 2F * .75));
 
     }
@@ -22,14 +21,14 @@ public class Arena {
     }
 
     public void applyBounceEffects() {
-        box.radius -= 4;
+        box.radius -= 2;
     }
 
     public void draw(ShapeRenderer shapeRenderer) {
-        Color currentColor = new Color(shapeRenderer.getColor());
+        Color savedCurrentColor = new Color(shapeRenderer.getColor());
         shapeRenderer.setColor(Color.RED);
         shapeRenderer.circle(box.x, box.y, box.radius);
-        shapeRenderer.setColor(currentColor);
+        shapeRenderer.setColor(savedCurrentColor);
     }
 
     public void dispose() {

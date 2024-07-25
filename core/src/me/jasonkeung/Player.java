@@ -6,27 +6,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class Player {
-    public enum Face {
-        DIRT, STEVE;
-
-        public static Texture getTexture(Face face) {
-            if (face.equals(DIRT)) {
-                return new Texture("dirt.jpg");
-            } else if (face.equals(STEVE)) {
-                return new Texture("steve.jpg");
-            }
-            return null;
-        }
-    }
-    public static int INIT_SIZE = 25;
+    public static int INIT_SIZE = 15;
     public static final int SPEED = 1000;
-    public static final float BOUNCE_MULTIPLE = .9F;
+    public static final float BOUNCE_MULTIPLE = 1F;
     public static final float GRAVITY = -5;
     private Texture img;
     private Circle box;
@@ -36,8 +23,7 @@ public class Player {
     private Color color;
     private int rainbowProgress;
 
-    public Player(int initX, int initY, Face face, Vector2 direction) {
-        this.img = Face.getTexture(face);
+    public Player(int initX, int initY, Vector2 direction) {
         this.box = new Circle(initX + INIT_SIZE, initY + INIT_SIZE, INIT_SIZE);
         this.vX = direction.x / direction.len() * SPEED;
         this.vY = direction.y / direction.len() * SPEED;
@@ -125,21 +111,13 @@ public class Player {
     }
 
     public void draw(ShapeRenderer shapeRenderer) {
-        Color currentColor = new Color(shapeRenderer.getColor());
+        Color savedCurrentColor = new Color(shapeRenderer.getColor());
         shapeRenderer.setColor(this.color);
         shapeRenderer.circle(box.x, box.y, box.radius);
         for (Circle circle : this.trail) {
             shapeRenderer.circle(circle.x, circle.y, circle.radius);
         }
-        shapeRenderer.setColor(currentColor);
-    }
-
-    public Texture getImg() {
-        return img;
-    }
-
-    public void setImg(Texture img) {
-        this.img = img;
+        shapeRenderer.setColor(savedCurrentColor);
     }
 
     public float getVX() {
