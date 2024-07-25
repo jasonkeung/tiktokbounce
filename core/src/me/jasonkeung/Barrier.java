@@ -50,20 +50,20 @@ public class Barrier {
         }
     }
 
-    public void bounce(Player player) {
+    public void bounce(Ball ball) {
         Vector2 newV;
-        newV = getNormalBounceVector(player.getVX(), player.getVY());
-        player.setVX((int) newV.x);
-        player.setVY((int) newV.y);
+        newV = getNormalBounceVector(ball.getVX(), ball.getVY());
+        ball.setVX((int) newV.x);
+        ball.setVY((int) newV.y);
 
 //        if (faceDirection.equals(FaceDirection.XPOS)) {
-//            player.getBox().setX(this.getBox().x + this.getBox().width);
+//            ball.getBox().setX(this.getBox().x + this.getBox().width);
 //        } else if (faceDirection.equals(FaceDirection.XNEG)) {
-//            player.getBox().setX(this.getBox().x - player.getBox().width);
+//            ball.getBox().setX(this.getBox().x - ball.getBox().width);
 //        } else if (faceDirection.equals(FaceDirection.YPOS)) {
-//            player.getBox().setY(this.getBox().y + this.getBox().height);
+//            ball.getBox().setY(this.getBox().y + this.getBox().height);
 //        } else {
-//            player.getBox().setY(this.getBox().y - player.getBox().height);
+//            ball.getBox().setY(this.getBox().y - ball.getBox().height);
 //        }
     }
 

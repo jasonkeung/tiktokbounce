@@ -7,14 +7,17 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BounceSongGame extends ApplicationAdapter {
-	public static final int HEIGHT = 1300;
+	public static final int HEIGHT = 1000;
 	public static final int WIDTH = HEIGHT * 9 / 16;
 	public static final float UPDATE_DT = 0.005F;
 
 	private ShapeRenderer shapeRenderer;
 	private SpriteBatch batch;
-	private Player player;
+	private List<Ball> balls;
 	private double accumulatedUpdateTime;
 	private Arena arena;
 	
@@ -22,13 +25,19 @@ public class BounceSongGame extends ApplicationAdapter {
 	public void create() {
 		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
-		player = new Player(500, 500, new Vector2(0, 1));
+		balls = new ArrayList<>(List.of(
+				new Ball(WIDTH / 2, HEIGHT / 3,
+						new Vector2(3, 1)),
+				new Ball(WIDTH / 3, HEIGHT / 2,
+						new Vector2(2, -1))));
 		accumulatedUpdateTime = 0;
 		arena = new Arena();
 	}
 
 	private void update(float deltaTime) {
-		player.update(deltaTime, arena);
+		for (Ball ball : balls) {
+			ball.update(deltaTime, arena, balls);
+		}
 		arena.update(deltaTime);
 	}
 
@@ -49,7 +58,9 @@ public class BounceSongGame extends ApplicationAdapter {
 		shapeRenderer.end();
 
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-		player.draw(shapeRenderer);
+		for (Ball ball : balls) {
+			ball.draw(shapeRenderer);
+		}
 		shapeRenderer.end();
 	}
 	
@@ -57,6 +68,8 @@ public class BounceSongGame extends ApplicationAdapter {
 	public void dispose () {
 		batch.dispose();
 		arena.dispose();
-		player.dispose();
+		for (Ball ball : balls) {
+			ball.dispose();
+		}
 	}
 }

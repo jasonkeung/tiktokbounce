@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Player {
+public class Ball {
     public static int INIT_SIZE = 15;
     public static final int SPEED = 1000;
     public static final float BOUNCE_MULTIPLE = 1F;
@@ -23,7 +23,7 @@ public class Player {
     private Color color;
     private int rainbowProgress;
 
-    public Player(int initX, int initY, Vector2 direction) {
+    public Ball(int initX, int initY, Vector2 direction) {
         this.box = new Circle(initX + INIT_SIZE, initY + INIT_SIZE, INIT_SIZE);
         this.vX = direction.x / direction.len() * SPEED;
         this.vY = direction.y / direction.len() * SPEED;
@@ -33,7 +33,8 @@ public class Player {
         this.color = new Color().fromHsv(rainbowProgress, 1, 1);
     }
 
-    public void update(float deltaTime, Arena arena) {
+    public void update(float deltaTime, Arena arena, List<Ball> balls) {
+        bounceOnOtherBalls(balls);
         bounceOnArena(arena);
         bounceOnWalls();
         this.vY += (GRAVITY * box.radius * box.radius) * deltaTime;
@@ -43,6 +44,16 @@ public class Player {
                 this.box.x + vX * deltaTime,
                 this.box.y + vY * deltaTime,
                 this.box.radius);
+    }
+
+    private void bounceOnOtherBalls(List<Ball> balls) {
+        for (Ball otherBall : balls) {
+            if (!otherBall.box.equals(box)) {
+                // create normal vector
+                // actually want to generate bounces at the same time so might
+                // need a different approach
+            }
+        }
     }
 
     private void bounceOnArena(Arena arena) {
@@ -93,8 +104,8 @@ public class Player {
 
     private void applyBounceEffects() {
 //        this.box.radius -= 1;
-        this.color.fromHsv(rainbowProgress % 360, 1, 1);
-        rainbowProgress += 5;
+        this.color.fromHsv(rainbowProgress, 1, 1);
+        rainbowProgress = (rainbowProgress + 5) % 360;
     }
 
     private void updateTrail() {
