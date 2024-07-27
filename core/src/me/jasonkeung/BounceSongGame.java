@@ -2,6 +2,8 @@ package me.jasonkeung;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -20,21 +22,26 @@ public class BounceSongGame extends ApplicationAdapter {
 	private List<Ball> balls;
 	private double accumulatedUpdateTime;
 	private Arena arena;
+	private BitmapFont font;
+	private BallBouncer ballBouncer;
 	
 	@Override
 	public void create() {
 		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
 		balls = new ArrayList<>(List.of(
-				new Ball(WIDTH / 2, HEIGHT / 3,
-						new Vector2(3, 1)),
 				new Ball(WIDTH / 3, HEIGHT / 2,
-						new Vector2(2, -1))));
+						new Vector2(1, 1)),
+				new Ball(WIDTH / 3, HEIGHT / 2,
+						new Vector2(1, 0))));
 		accumulatedUpdateTime = 0;
 		arena = new Arena();
+		font = new BitmapFont();
+		ballBouncer = new BallBouncer();
 	}
 
 	private void update(float deltaTime) {
+		ballBouncer.update(balls);
 		for (Ball ball : balls) {
 			ball.update(deltaTime, arena, balls);
 		}
@@ -46,6 +53,14 @@ public class BounceSongGame extends ApplicationAdapter {
 	public void render() {
 		ScreenUtils.clear(1, 1, 1, 1);
 		float deltaTime = Gdx.graphics.getDeltaTime();
+
+		batch.begin();
+		Vector2 b1V = new Vector2(balls.get(0).vX, balls.get(0).vY);
+		Vector2 b2V = new Vector2(balls.get(1).vX, balls.get(1).vY);
+		Long totalKinEnergy = Math.round(.5 * b1V.len2() + .5 * b2V.len2());
+		font.setColor(Color.BLACK);
+		font.draw(batch, totalKinEnergy.toString(), WIDTH / 2, HEIGHT / 6);
+		batch.end();
 
 		accumulatedUpdateTime += deltaTime;
 		while (accumulatedUpdateTime >= UPDATE_DT) {

@@ -52,9 +52,9 @@ public class Barrier {
 
     public void bounce(Ball ball) {
         Vector2 newV;
-        newV = getNormalBounceVector(ball.getVX(), ball.getVY());
-        ball.setVX((int) newV.x);
-        ball.setVY((int) newV.y);
+        newV = getNormalBounceVector(ball.vX, ball.vY);
+        ball.vX = (int) newV.x;
+        ball.vY = (int) newV.y;
 
 //        if (faceDirection.equals(FaceDirection.XPOS)) {
 //            ball.getBox().setX(this.getBox().x + this.getBox().width);

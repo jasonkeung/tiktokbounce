@@ -10,7 +10,7 @@ import static me.jasonkeung.BounceSongGame.WIDTH;
 
 public class Arena {
 
-    private Circle box;
+    public Circle box;
 
     public Arena() {
         this.box = new Circle((float) (WIDTH / 2), (float) (HEIGHT / 2), (float) (WIDTH / 2F * .95));
@@ -26,19 +26,13 @@ public class Arena {
     }
 
     public void draw(ShapeRenderer shapeRenderer) {
-        Color savedCurrentColor = new Color(shapeRenderer.getColor());
         Gdx.gl.glLineWidth(5);
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.circle(box.x, box.y, box.radius);
-        shapeRenderer.setColor(savedCurrentColor);
     }
 
     public void dispose() {
 
-    }
-
-    public Circle getBox() {
-        return this.box;
     }
 
 }
