@@ -22,34 +22,17 @@ public class BallBouncer {
                 ball1.applyBounceEffects();
                 ball2.applyBounceEffects();
 
-                long initialKin = getKineticEnergy(ball1, ball2);
+                Vector2 normal = new Vector2(ball1.box.x - ball2.box.x, ball1.box.y - ball2.box.y).nor();
+                Vector2 relativeVelocity = new Vector2(ball1.vX - ball2.vX, ball1.vY - ball2.vY);
+                float normalDotRelativeVelocity = relativeVelocity.dot(normal);
 
-                Vector2 normal1 = new Vector2(
-                        ball1.box.x - ball2.box.x,
-                        ball1.box.y - ball2.box.y).nor();
-                Vector2 shiftedV1 = new Vector2(
-                        ball1.vX - ball2.vX,
-                        ball1.vY - ball2.vY);
-                Vector2 newV1 = new Vector2(ball1.vX, ball1.vY);
-                newV1.sub(normal1.scl(shiftedV1.dot(normal1)));
-                ball1.vX = newV1.x;
-                ball1.vY = newV1.y;
+                Vector2 impulse = normal.scl(2 * normalDotRelativeVelocity / 2);
 
+                ball1.vX -= impulse.x;
+                ball1.vY -= impulse.y;
 
-                Vector2 normal2 = new Vector2(
-                        ball1.box.x - ball2.box.x,
-                        ball1.box.y - ball2.box.y).nor();
-                Vector2 shiftedV2 = new Vector2(
-                        ball2.vX - ball1.vX,
-                        ball2.vY - ball1.vY);
-                Vector2 newV2 = new Vector2(ball2.vX, ball2.vY);
-                newV2.sub(normal2.scl(shiftedV2.dot(normal2)));
-                ball2.vX = newV2.x;
-                ball2.vY = newV2.y;
-
-                long endKin = getKineticEnergy(ball1, ball2);
-
-                assert initialKin == endKin;
+                ball2.vX += impulse.x;
+                ball2.vY += impulse.y;
 
                 Vector2 ball2ToBall1Direction = new Vector2(
                         ball1.box.x - ball2.box.x,
@@ -62,13 +45,6 @@ public class BallBouncer {
             }
         }
     }
-
-    private long getKineticEnergy(Ball ball1, Ball ball2) {
-        Vector2 b1V = new Vector2(ball1.vX, ball1.vY);
-        Vector2 b2V = new Vector2(ball2.vX, ball2.vY);
-        return Math.round(.5 * b1V.len2() + .5 * b2V.len2());
-    }
-
 
     private List<List<Ball>> getBallPairs(List<Ball> balls) {
         List<List<Ball>> pairs = new ArrayList<>();

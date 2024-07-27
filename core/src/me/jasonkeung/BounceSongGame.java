@@ -33,7 +33,9 @@ public class BounceSongGame extends ApplicationAdapter {
 				new Ball(WIDTH / 3, HEIGHT / 2,
 						new Vector2(1, 1)),
 				new Ball(WIDTH / 3, HEIGHT / 2,
-						new Vector2(1, 0))));
+						new Vector2(1, 0)),
+				new Ball(WIDTH / 3, HEIGHT / 4,
+						new Vector2(1, 2))));
 		accumulatedUpdateTime = 0;
 		arena = new Arena();
 		font = new BitmapFont();
@@ -53,14 +55,6 @@ public class BounceSongGame extends ApplicationAdapter {
 	public void render() {
 		ScreenUtils.clear(1, 1, 1, 1);
 		float deltaTime = Gdx.graphics.getDeltaTime();
-
-		batch.begin();
-		Vector2 b1V = new Vector2(balls.get(0).vX, balls.get(0).vY);
-		Vector2 b2V = new Vector2(balls.get(1).vX, balls.get(1).vY);
-		Long totalKinEnergy = Math.round(.5 * b1V.len2() + .5 * b2V.len2());
-		font.setColor(Color.BLACK);
-		font.draw(batch, totalKinEnergy.toString(), WIDTH / 2, HEIGHT / 6);
-		batch.end();
 
 		accumulatedUpdateTime += deltaTime;
 		while (accumulatedUpdateTime >= UPDATE_DT) {

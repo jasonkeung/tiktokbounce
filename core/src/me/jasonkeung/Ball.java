@@ -14,7 +14,7 @@ public class Ball {
     public static int INIT_SIZE = 30;
     public static final int SPEED = 500;
     public static final float BOUNCE_MULTIPLE = 1F;
-    public static final float GRAVITY = -4;
+    public static final float GRAVITY = 0;
     public Circle box;
     public float vX;
     public float vY;
