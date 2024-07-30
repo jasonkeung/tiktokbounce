@@ -22,7 +22,7 @@ public class Arena {
     }
 
     public void applyBounceEffects() {
-//        box.radius -= 1;
+        box.radius -= 1;
     }
 
     public void draw(ShapeRenderer shapeRenderer) {

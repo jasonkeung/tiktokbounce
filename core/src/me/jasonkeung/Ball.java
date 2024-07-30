@@ -1,5 +1,7 @@
 package me.jasonkeung;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,10 +11,11 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 public class Ball {
-    public static int INIT_SIZE = 30;
-    public static final int SPEED = 500;
+    public static int INIT_SIZE = 50;
+    public static final int SPEED = 1000;
     public static final float BOUNCE_MULTIPLE = 1F;
     public static final float GRAVITY = 0;
     public Circle box;
@@ -21,6 +24,10 @@ public class Ball {
     private LinkedList<Circle> trail;
     private Color color;
     private int rainbowProgress;
+    private long lastBounceTick;
+    private boolean didBounceThisTick;
+    private Texture texture;
+    private Sound sound;
 
     public Ball(int initX, int initY, Vector2 direction) {
         this.box = new Circle(initX, initY, INIT_SIZE);
@@ -30,11 +37,20 @@ public class Ball {
                 new Circle(), new Circle(), new Circle()));
         this.rainbowProgress = 0;
         this.color = new Color().fromHsv(rainbowProgress, 1, 1);
+        this.lastBounceTick = 0;
+        this.didBounceThisTick = false;
+        this.texture = new Texture("kamala.png");
+        this.sound = Gdx.audio.newSound(Gdx.files.internal("c6.mp3"));
     }
 
-    public void update(float deltaTime, Arena arena, List<Ball> balls) {
-        bounceOnArena(arena);
+    public void update(float deltaTime, Optional<Arena> maybeArena) {
+        this.didBounceThisTick = false;
+        maybeArena.ifPresent(this::bounceOnArena);
         bounceOnWalls();
+        if (didBounceThisTick) {
+            this.lastBounceTick = BounceSongGame.tickCount;
+        }
+
         this.vY += (GRAVITY * box.radius * box.radius) * deltaTime;
 
         updateTrail();
@@ -44,6 +60,27 @@ public class Ball {
                 this.box.radius);
     }
 
+    public void applyBounceEffects() {
+//        this.box.radius -= 1;
+        if (BounceSongGame.tickCount - lastBounceTick > 3) {
+            this.color.fromHsv(rainbowProgress, 1, 1);
+            rainbowProgress = (rainbowProgress + 5) % 360;
+        }
+        this.didBounceThisTick = true;
+        this.sound.play();
+    }
+
+    public void draw(ShapeRenderer shapeRenderer) {
+        shapeRenderer.setColor(this.color);
+        shapeRenderer.circle(box.x, box.y, box.radius);
+        for (Circle circle : this.trail) {
+            shapeRenderer.circle(circle.x, circle.y, circle.radius);
+        }
+    }
+
+    public void draw(SpriteBatch batch) {
+        batch.draw(texture, box.x - box.radius, box.y - box.radius, box.radius * 2, box.radius * 2);
+    }
 
     private void bounceOnArena(Arena arena) {
         float distBetweenCenters =
@@ -76,29 +113,42 @@ public class Ball {
     }
 
     private void bounceOnWalls() {
-        if (this.box.x < 0 + this.box.radius) {
+        bounceOnBottom();
+        bounceOnTop();
+        bounceOnLeft();
+        bounceOnRight();
+    }
+
+    private void bounceOnLeft() {
+        if (this.box.x < this.box.radius) {
             applyBounceEffects();
             vX = Math.abs(vX * BOUNCE_MULTIPLE);
             this.box.x = this.box.radius;
-        } else if (this.box.x > BounceSongGame.WIDTH - this.box.radius) {
+        }
+    }
+
+    private void bounceOnRight() {
+        if (this.box.x > BounceSongGame.WIDTH - this.box.radius) {
             applyBounceEffects();
             vX = -Math.abs(vX * BOUNCE_MULTIPLE);
             this.box.x = BounceSongGame.WIDTH - this.box.radius;
-        } else if (this.box.y < 0 + this.box.radius) {
+        }
+    }
+
+    private void bounceOnTop() {
+        if (this.box.y > BounceSongGame.HEIGHT - this.box.radius) {
             applyBounceEffects();
-            vY = Math.abs(BOUNCE_MULTIPLE * vY);
-            this.box.y = this.box.radius;
-        } else if (this.box.y > BounceSongGame.HEIGHT - this.box.radius) {
-            applyBounceEffects();
-            vY = -Math.abs(BOUNCE_MULTIPLE * vY);
+            vY = -Math.abs(vY * BOUNCE_MULTIPLE);
             this.box.y = BounceSongGame.HEIGHT - this.box.radius;
         }
     }
 
-    public void applyBounceEffects() {
-//        this.box.radius -= 1;
-        this.color.fromHsv(rainbowProgress, 1, 1);
-        rainbowProgress = (rainbowProgress + 5) % 360;
+    private void bounceOnBottom() {
+        if (this.box.y < this.box.radius) {
+            applyBounceEffects();
+            vY = Math.abs(BOUNCE_MULTIPLE * vY);
+            this.box.y = this.box.radius;
+        }
     }
 
     private void updateTrail() {
@@ -109,12 +159,5 @@ public class Ball {
     public void dispose() {
     }
 
-    public void draw(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(this.color);
-        shapeRenderer.circle(box.x, box.y, box.radius);
-        for (Circle circle : this.trail) {
-            shapeRenderer.circle(circle.x, circle.y, circle.radius);
-        }
-    }
 
 }
